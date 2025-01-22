@@ -1,4 +1,5 @@
 Jackal: Rise of Raven and Titan"
+
 Game Features
 
 🎮 Immersive Gameplay: Engage in high-stakes sniper missions with realistic action mechanics.
