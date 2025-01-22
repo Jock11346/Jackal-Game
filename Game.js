@@ -1,118 +1,147 @@
-// Title Scene
-class TitleScene extends Phaser.Scene {
-    constructor() {
-        super({ key: 'TitleScene' });
-    }
+// Updated code to integrate Titan, the head of the enemy faction, into the game storyline and gameplay mechanics. Updated title to "Jackal: Rise of Raven and Titan".
 
-    preload() {
-        this.load.image('titleScreen', 'assets/title_screen.png');
-    }
-
-    create() {
-        this.add.image(400, 300, 'titleScreen').setScale(0.5);
-
-        const startButton = this.add.text(400, 450, 'Start Mission', {
-            font: '28px Arial',
-            fill: '#FFF',
-            backgroundColor: '#333',
-            padding: { x: 10, y: 5 },
-        }).setOrigin(0.5);
-
-        startButton.setInteractive();
-        startButton.on('pointerdown', () => {
-            this.scene.start('GameScene');
-        });
-    }
-}
-
-// Game Scene
-class GameScene extends Phaser.Scene {
-    constructor() {
-        super({ key: 'GameScene' });
-    }
-
-    preload() {
-        this.load.image('background', 'assets/background.png');
-        this.load.image('drone', 'assets/drone.png');
-        this.load.image('enemy', 'assets/enemy.png');
-        this.load.image('barrel', 'assets/barrel.png');
-        this.load.image('crosshair', 'assets/crosshair.png');
-    }
-
-    create() {
-        this.add.image(400, 300, 'background');
-
-        this.score = 0;
-        this.timeLeft = 30;
-        this.ammo = 10;
-
-        const scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '20px', fill: '#FFF' });
-        const timerText = this.add.text(10, 40, Time: ${this.timeLeft}, { fontSize: '20px', fill: '#FFF' });
-        const ammoText = this.add.text(10, 70, Ammo: ${this.ammo}, { fontSize: '20px', fill: '#FFF' });
-
-        this.time.addEvent({
-            delay: 1000,
-            callback: () => {
-                this.timeLeft -= 1;
-                timerText.setText(Time: ${this.timeLeft});
-                if (this.timeLeft <= 0) {
-                    this.scene.pause();
-                    alert('Time’s Up! Final Score: ' + this.score);
-                }
-            },
-            loop: true,
-        });
-
-        this.time.addEvent({
-            delay: 1000,
-            callback: () => this.spawnTarget(scoreText),
-            loop: true,
-        });
-
-        const crosshair = this.add.image(400, 300, 'crosshair').setScale(0.5);
-        this.input.on('pointermove', (pointer) => {
-            crosshair.x = pointer.x;
-            crosshair.y = pointer.y;
-        });
-
-        this.input.on('pointerdown', () => {
-            if (this.ammo > 0) {
-                this.ammo -= 1;
-                ammoText.setText(Ammo: ${this.ammo});
-            } else {
-                alert('Out of ammo! Reload!');
-            }
-        });
-
-        this.input.keyboard.on('keydown-R', () => {
-            this.ammo = 10;
-            ammoText.setText(Ammo: ${this.ammo});
-        });
-    }
-
-    spawnTarget(scoreText) {
-        const targetTypes = ['drone', 'enemy', 'barrel'];
-        const type = Phaser.Math.RND.pick(targetTypes);
-        const x = Phaser.Math.Between(50, 750);
-        const y = Phaser.Math.Between(50, 550);
-
-        const target = this.add.sprite(x, y, type).setInteractive();
-        target.on('pointerdown', () => {
-            this.score += type === 'barrel' ? 50 : 10;
-            scoreText.setText(Score: ${this.score});
-            target.destroy();
-        });
-
-        this.time.delayedCall(2000, () => target.destroy());
-    }
-}
-
-// Game Configuration
-const config = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    scene: [TitleScene, GameScene],
+// Assets list
+const ASSETS = {
+    background: "assets/background.png",
+    titleScreen: "assets/title_screen.png",
+    jackal: "assets/jackal.png",
+    raven: "assets/raven.png",
+    titan: "assets/titan.png", // Added Titan's sprite asset
+    drone: "assets/drone.png",
+    enemy: "assets/enemy.png",
+    barrel: "assets/barrel.png",
+    crosshair: "assets/crosshair.png",
+    bullets: "assets/bullets.png",
+    bossMusic: "assets/boss_music.mp3", // Added Titan's boss music
+    normalMusic: "assets/normal_music.mp3"
 };
 
-const game = new Phaser.Game(config);
+// Titan character configuration
+const TITAN = {
+    sprite: 'titan',
+    x: 400,
+    y: 300,
+    health: 250, // Adjusted Titan's health for balance
+    damage: 15, // Adjusted damage to ensure a fair fight
+    speed: 60, // Slightly increased speed for challenge
+    weapon: {
+        type: "plasmaHammer",
+        attackRadius: 120, // Adjusted radius for balance
+        damage: 10 // Added specific weapon damage
+    }
+};
+
+// Game states
+const STATES = {
+    TITLE_SCREEN: "TITLE_SCREEN",
+    GAME_PLAY: "GAME_PLAY",
+    BOSS_BATTLE: "BOSS_BATTLE", // Added a new state for the Titan boss battle
+    GAME_OVER: "GAME_OVER",
+    VICTORY: "VICTORY"
+};
+
+let currentBossDefeated = false;
+
+// Function to spawn Titan
+function spawnTitan(scene) {
+    const titan = scene.physics.add.sprite(TITAN.x, TITAN.y, TITAN.sprite);
+    titan.health = TITAN.health;
+    titan.damage = TITAN.damage;
+    titan.setScale(2);
+
+    // Titan's behaviour
+    scene.physics.add.collider(titan, player, () => {
+        player.health -= TITAN.damage;
+        updateHUD();
+        if (player.health <= 0) {
+            gameOver(scene);
+        }
+    });
+
+    titan.attack = () => {
+        const attack = scene.physics.add.sprite(titan.x, titan.y, 'plasmaShockwave');
+        attack.setCircle(TITAN.weapon.attackRadius);
+        scene.physics.add.overlap(player, attack, () => {
+            player.health -= TITAN.weapon.damage;
+            updateHUD();
+            if (player.health <= 0) {
+                gameOver(scene);
+            }
+        });
+        setTimeout(() => attack.destroy(), 2000);
+    };
+
+    scene.time.addEvent({ delay: 3000, callback: titan.attack, loop: true });
+
+    titan.on('destroy', () => {
+        currentBossDefeated = true;
+        scene.sound.play('bossMusic', { volume: 0.7 });
+        victory(scene);
+    });
+
+    return titan;
+}
+
+// Updated game flow to include Titan
+function updateGameFlow(scene) {
+    if (!currentBossDefeated) {
+        // Trigger boss battle
+        scene.state = STATES.BOSS_BATTLE;
+        scene.sound.stopAll();
+        scene.sound.play('bossMusic');
+        spawnTitan(scene);
+    } else {
+        scene.state = STATES.VICTORY;
+        victory(scene);
+    }
+}
+
+// Boss battle initiation in storyline
+function startBossBattle(scene) {
+    // Cutscene before Titan appears
+    const cutsceneText = [
+        "Jackal: So, this is the man behind it all...",
+        "Titan: Hah! Man? You overestimate me. I am a force of nature!",
+        "Raven: Big words for someone about to fall.",
+        "Titan: You amuse me, Raven. Let’s see how long you last!"
+    ];
+
+    let index = 0;
+    const showNextLine = () => {
+        if (index < cutsceneText.length) {
+            displayDialog(cutsceneText[index]);
+            index++;
+            setTimeout(showNextLine, 3000);
+        } else {
+            updateGameFlow(scene);
+        }
+    };
+    showNextLine();
+}
+
+// Call startBossBattle at the appropriate mission level
+function checkLevelProgress(scene) {
+    if (scene.level === 5) { // Example: Titan appears at level 5
+        startBossBattle(scene);
+    }
+}
+
+// Victory screen update
+function victory(scene) {
+    scene.add.image(400, 300, 'victoryScreen');
+    scene.sound.stopAll();
+    scene.sound.play('victoryMusic');
+    displayDialog("Congratulations! Titan has been defeated.");
+    scene.input.once('pointerdown', () => {
+        scene.state = STATES.TITLE_SCREEN;
+        resetGame(scene);
+    });
+}
+
+// Integrate Titan into storyline and gameplay
+addEventListener('load', () => {
+    preloadAssets();
+    createScenes();
+    const scene = initializeScene();
+    checkLevelProgress(scene);
+});
