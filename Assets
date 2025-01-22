@@ -1,6 +1,9 @@
-title_screen.png
-background.png
-drone.png
-enemy.png
-barrel.png
-crosshair.png
+/assets/
+  background.png
+  title_screen.png
+  jackal.png
+  raven.png
+  titan.png
+  drone.png
+  enemy.png
+  barrel.png
