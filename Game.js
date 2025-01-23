@@ -13,6 +13,7 @@ const ASSETS = {
     crosshair: "assets/crosshair.png",
     bullets: "assets/bullets.png",
     bossMusic: "assets/boss_music.mp3", // Added Titan's boss music
+    victoryMusic: "assets/victory_music.mp3", // Victory music added
     normalMusic: "assets/normal_music.mp3"
 };
 
@@ -75,7 +76,7 @@ function spawnTitan(scene) {
 
     titan.on('destroy', () => {
         currentBossDefeated = true;
-        scene.sound.play('bossMusic', { volume: 0.7 });
+        scene.sound.play('victoryMusic', { volume: 0.7 });
         victory(scene);
     });
 
