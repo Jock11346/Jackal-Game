@@ -143,4 +143,5 @@ function checkLevelProgress(scene) {
   if (scene.level === 5) {
     startBossBattle(scene); // Trigger the Titan boss battle
   }
-} 
+}
+$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
