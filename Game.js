@@ -1,5 +1,5 @@
 // Updated code to integrate Titan, the head of the enemy faction, into the game storyline and gameplay mechanics. Updated title to "Jackal: Rise of Raven and Titan".
-
+let ASSETS = ASSETS || { ... };
 // Assets list
 const ASSETS = {
     background: "assets/background.png",
