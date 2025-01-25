@@ -148,4 +148,40 @@ addEventListener('load', () => {
     createScenes();
     const scene = initializeScene();
     checkLevelProgress(scene);
+preload() {
+    console.log("Preloading assets...");
+    Object.entries(ASSETS).forEach(([key, path]) => {
+        if (path.endsWith('.png')) {
+            this.load.image(key, path);
+        } else if (path.endsWith('.mp3')) {
+            this.load.audio(key, path);
+        }
+        console.log(`Attempted to load asset: ${key}, path: ${path}`);
+    });
+}
 });
+const config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    parent: 'gameCanvas', // ID of the <canvas> element in your HTML
+    physics: {
+        default: 'arcade',
+        arcade: {
+            debug: false,
+        },
+    },
+    scene: [TitleScene, MainScene], // Ensure all scenes are included
+};
+
+const game = new Phaser.Game(config);
+function verifyAssets(scene) {
+    Object.entries(ASSETS).forEach(([key, path]) => {
+        if (scene.textures.exists(key)) {
+            console.log(`Asset loaded successfully: ${key}`);
+        } else {
+            console.error(`Asset failed to load: ${key}, path: ${path}`);
+        }
+    });
+}
+
