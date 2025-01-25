@@ -1,14 +1,39 @@
-/assets/
-background: "assets/background.png",
-      titleScreen: "assets/title_screen.png",
-      jackal: "assets/jackal.png",
-      raven: "assets/raven.png",
-      titan: "assets/titan.png",
-      drone: "assets/drone.png",
-      enemy: "assets/enemy.png",
-      barrel: "assets/barrel.png",
-      crosshair: "assets/crosshair.png",
-      bullets: "assets/bullets.png",
-      bossMusic: "assets/boss_music.mp3",
-      victoryMusic: "assets/victory_music.mp3",
-      normalMusic: "assets/normal_music.mp3"
+const ASSETS = {
+    background: "assets/background.png",
+    titleScreen: "assets/title_screen.png",
+    jackal: "assets/jackal.png",
+    raven: "assets/raven.png",
+    titan: "assets/titan.png",
+    drone: "assets/drone.png",
+    enemy: "assets/enemy.png",
+    barrel: "assets/barrel.png",
+    crosshair: "assets/crosshair.png",
+    bullets: "assets/bullets.png",
+    bossMusic: "assets/boss_music.mp3",
+    victoryMusic: "assets/victory_music.mp3",
+    normalMusic: "assets/normal_music.mp3"
+};
+preload() {
+    console.log("Preloading assets...");
+    this.load.image('background', ASSETS.background);
+    this.load.image('titleScreen', ASSETS.titleScreen);
+    this.load.image('jackal', ASSETS.jackal);
+    this.load.audio('bossMusic', ASSETS.bossMusic);
+    
+    // Debugging asset loading
+    Object.entries(ASSETS).forEach(([key, path]) => {
+        console.log(`Loading ${key}: ${path}`);
+        if (!path) {
+            console.error(`Missing path for asset: ${key}`);
+        }
+    });
+}
+function verifyAssets(scene) {
+    Object.entries(ASSETS).forEach(([key, path]) => {
+        if (scene.textures.exists(key)) {
+            console.log(`Asset loaded successfully: ${key}`);
+        } else {
+            console.error(`Asset failed to load: ${key}, path: ${path}`);
+        }
+    });
+}
