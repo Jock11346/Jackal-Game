@@ -1,14 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jackal: Rise of Raven and Titan</title>
-    <script src="path/to/game.js"></script>
-    <link rel="icon" href="path/to/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jackal: Rise of Raven and Titan</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+  <link rel="stylesheet" href="styles.css"> <!-- Optional if you have a styles.css -->
 </head>
 <body>
-    <div id="game-container"></div>
-    <script src="path/to/game.js"></script>
+  <div id="game-container"></div>
+  <script>
+    // Ensure the path matches the structure in your repository
+    const ASSETS = {
+      background: "assets/background.png",
+      titleScreen: "assets/title_screen.png",
+      jackal: "assets/jackal.png",
+      raven: "assets/raven.png",
+      titan: "assets/titan.png",
+      drone: "assets/drone.png",
+      enemy: "assets/enemy.png",
+      barrel: "assets/barrel.png",
+      crosshair: "assets/crosshair.png",
+      bullets: "assets/bullets.png",
+      bossMusic: "assets/boss_music.mp3",
+      victoryMusic: "assets/victory_music.mp3",
+      normalMusic: "assets/normal_music.mp3"
+    };
+  </script>
+  <script src="game.js"></script> <!-- Link to your game.js -->
 </body>
 </html>
